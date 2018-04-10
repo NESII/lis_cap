@@ -183,7 +183,7 @@ module LIS_NUOPC_Gluecode
     type(LIS_FieldHookup), allocatable :: hookup(:)
   end type
 
-  type(LIS_Field),dimension(73)  :: LIS_FieldList = (/ &
+  type(LIS_Field),dimension(75)  :: LIS_FieldList = (/ &
     LIS_Field(stdName='2m_air_temperature', &
       stateName='t2_f', &
       ampValue=1.d0, meanValue=0.d0, & 
@@ -448,7 +448,7 @@ module LIS_NUOPC_Gluecode
       stateName='qsfc_f', &
       ampValue=1.d0, meanValue=0.d0, & 
       units='kg/kg',transferOffer='will provide'), &
-    LIS_Field(stdName='surface_temperature', &
+    LIS_Field(stdName='surface_temperature_land', &
       stateName='avgsurft', &
       ampValue=10.d0, meanValue=295.d0, & 
       units='K',transferOffer='will provide'), &
@@ -474,8 +474,16 @@ module LIS_NUOPC_Gluecode
       units='-',transferOffer='will provide'), &
     LIS_Field(stdName='wind_speed', &
       stateName='wind_f', &
+      ampValue=1.d0, meanValue=0.d0, &
+      units='m/s ',transferOffer='will provide'), &
+    LIS_Field(stdName='final_potential_evaporation', &
+      stateName='etp', &
+      ampValue=1.d0, meanValue=0.d0, &
+      units='W/m2',transferOffer='will provide'), &
+    LIS_Field(stdName='accum_plant_transpiration', &
+      stateName='ett', &
       ampValue=1.d0, meanValue=0.d0, & 
-      units='m/s ',transferOffer='will provide')/)
+      units='W/m2',transferOffer='will provide')/)
   
 !EOP
 
@@ -1392,7 +1400,7 @@ contains
 !          LIS_FieldList(fIndex)%adExport=.FALSE.
 !          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray=>LISWRF_export(nIndex)%#NOTAVAILABLE#
 !          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray_t=>LISWRF_export(nIndex)%#NOTAVAILABLE#_t
-        case ('surface_temperature')              ! (67)
+        case ('surface_temperature_land')              ! (67)
 !          if (allocated(#NOTAVAILABLE#%varname)) &
 !            LIS_FieldList(fIndex)%lisForcVarname=#NOTAVAILABLE#%varname(1)
 !          LIS_FieldList(fIndex)%adImport=(#NOTAVAILABLE#%selectOpt == 1)
@@ -1441,6 +1449,20 @@ contains
 !          LIS_FieldList(fIndex)%adExport=.FALSE.
 !          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray=>LISWRF_export(nIndex)%#NOTAVAILABLE#
 !          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray_t=>LISWRF_export(nIndex)%#NOTAVAILABLE#_t
+        case ('accum_plant_transpiration')              ! (74)
+!          if (allocated(#NOTAVAILABLE#%varname)) &
+!            LIS_FieldList(fIndex)%lisForcVarname=#NOTAVAILABLE#%varname(1)
+!          LIS_FieldList(fIndex)%adImport=(#NOTAVAILABLE#%selectOpt == 1)
+          LIS_FieldList(fIndex)%adExport=.TRUE.
+          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray=>LISWRF_export(nIndex)%ett
+          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray_t=>LISWRF_export(nIndex)%ett_t
+        case ('final_potential_evaporation')              ! (75)
+!          if (allocated(#NOTAVAILABLE#%varname)) &
+!            LIS_FieldList(fIndex)%lisForcVarname=#NOTAVAILABLE#%varname(1)
+!          LIS_FieldList(fIndex)%adImport=(#NOTAVAILABLE#%selectOpt == 1)
+          LIS_FieldList(fIndex)%adExport=.TRUE.
+          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray=>LISWRF_export(nIndex)%etp
+          LIS_FieldList(fIndex)%hookup(nIndex)%exportArray_t=>LISWRF_export(nIndex)%etp_t
         case default
           call ESMF_LogWrite("LIS: Field hookup information missing. " //&
             "Skipping hookup: "//trim(LIS_FieldList(fIndex)%stdName), &
